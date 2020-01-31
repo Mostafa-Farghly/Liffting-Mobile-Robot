@@ -1,0 +1,983 @@
+
+MCT_Project.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000598  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .stab         00000d68  00000000  00000000  000005ec  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  2 .stabstr      000009a0  00000000  00000000  00001354  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   8:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  10:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  14:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  18:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  1c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  20:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  24:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  28:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  2c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  30:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  34:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  38:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  3c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  40:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  44:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  48:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  4c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  50:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+  60:	0e 94 a3 01 	call	0x346	; 0x346 <main>
+  64:	0c 94 ca 02 	jmp	0x594	; 0x594 <_exit>
+
+00000068 <__bad_interrupt>:
+  68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+0000006c <PWM_Timer0_init>:
+/*****************************************************
+ * 				Functions Definitions				 *
+ *****************************************************/
+
+void PWM_Timer0_init(uint8 duty_cycle)
+{
+  6c:	df 93       	push	r29
+  6e:	cf 93       	push	r28
+  70:	0f 92       	push	r0
+  72:	cd b7       	in	r28, 0x3d	; 61
+  74:	de b7       	in	r29, 0x3e	; 62
+  76:	89 83       	std	Y+1, r24	; 0x01
+	/* Initial timer value */
+	TCNT0 = 0;
+  78:	e2 e5       	ldi	r30, 0x52	; 82
+  7a:	f0 e0       	ldi	r31, 0x00	; 0
+  7c:	10 82       	st	Z, r1
+
+	/* Set duty cycle */
+	duty_cycle %= 101;
+  7e:	89 81       	ldd	r24, Y+1	; 0x01
+  80:	95 e6       	ldi	r25, 0x65	; 101
+  82:	69 2f       	mov	r22, r25
+  84:	0e 94 97 02 	call	0x52e	; 0x52e <__udivmodqi4>
+  88:	89 2f       	mov	r24, r25
+  8a:	89 83       	std	Y+1, r24	; 0x01
+	OCR0  = SET_DUTYCYCLE(duty_cycle);
+  8c:	ec e5       	ldi	r30, 0x5C	; 92
+  8e:	f0 e0       	ldi	r31, 0x00	; 0
+  90:	89 81       	ldd	r24, Y+1	; 0x01
+  92:	48 2f       	mov	r20, r24
+  94:	50 e0       	ldi	r21, 0x00	; 0
+  96:	ca 01       	movw	r24, r20
+  98:	9c 01       	movw	r18, r24
+  9a:	22 0f       	add	r18, r18
+  9c:	33 1f       	adc	r19, r19
+  9e:	c9 01       	movw	r24, r18
+  a0:	96 95       	lsr	r25
+  a2:	98 2f       	mov	r25, r24
+  a4:	88 27       	eor	r24, r24
+  a6:	97 95       	ror	r25
+  a8:	87 95       	ror	r24
+  aa:	82 1b       	sub	r24, r18
+  ac:	93 0b       	sbc	r25, r19
+  ae:	84 0f       	add	r24, r20
+  b0:	95 1f       	adc	r25, r21
+  b2:	24 e6       	ldi	r18, 0x64	; 100
+  b4:	30 e0       	ldi	r19, 0x00	; 0
+  b6:	b9 01       	movw	r22, r18
+  b8:	0e 94 a3 02 	call	0x546	; 0x546 <__divmodhi4>
+  bc:	cb 01       	movw	r24, r22
+  be:	80 83       	st	Z, r24
+
+	/* Set OC0 as output pin */
+	DDRB  = DDRB | (1 << PB3);
+  c0:	a7 e3       	ldi	r26, 0x37	; 55
+  c2:	b0 e0       	ldi	r27, 0x00	; 0
+  c4:	e7 e3       	ldi	r30, 0x37	; 55
+  c6:	f0 e0       	ldi	r31, 0x00	; 0
+  c8:	80 81       	ld	r24, Z
+  ca:	88 60       	ori	r24, 0x08	; 8
+  cc:	8c 93       	st	X, r24
+	 * 1. Fast PWM mode FOC0=0
+	 * 2. Fast PWM Mode WGM01=1 & WGM00=1
+	 * 3. Clear OC0 when match occurs (non inverted mode) COM00=0 & COM01=1
+	 * 4. clock = F_CPU/8 CS00=0 CS01=1 CS02=0
+	 */
+	TCCR0 = (1 << WGM00) | (1 << WGM01) | (1 << COM01) | (1 << CS01);
+  ce:	e3 e5       	ldi	r30, 0x53	; 83
+  d0:	f0 e0       	ldi	r31, 0x00	; 0
+  d2:	8a e6       	ldi	r24, 0x6A	; 106
+  d4:	80 83       	st	Z, r24
+}
+  d6:	0f 90       	pop	r0
+  d8:	cf 91       	pop	r28
+  da:	df 91       	pop	r29
+  dc:	08 95       	ret
+
+000000de <PWM_Timer0_setDutyCycle>:
+
+void PWM_Timer0_setDutyCycle(uint8 duty_cycle)
+{
+  de:	df 93       	push	r29
+  e0:	cf 93       	push	r28
+  e2:	0f 92       	push	r0
+  e4:	cd b7       	in	r28, 0x3d	; 61
+  e6:	de b7       	in	r29, 0x3e	; 62
+  e8:	89 83       	std	Y+1, r24	; 0x01
+	/* Set duty cycle */
+	duty_cycle %= 101;
+  ea:	89 81       	ldd	r24, Y+1	; 0x01
+  ec:	95 e6       	ldi	r25, 0x65	; 101
+  ee:	69 2f       	mov	r22, r25
+  f0:	0e 94 97 02 	call	0x52e	; 0x52e <__udivmodqi4>
+  f4:	89 2f       	mov	r24, r25
+  f6:	89 83       	std	Y+1, r24	; 0x01
+	OCR0  = SET_DUTYCYCLE(duty_cycle);
+  f8:	ec e5       	ldi	r30, 0x5C	; 92
+  fa:	f0 e0       	ldi	r31, 0x00	; 0
+  fc:	89 81       	ldd	r24, Y+1	; 0x01
+  fe:	48 2f       	mov	r20, r24
+ 100:	50 e0       	ldi	r21, 0x00	; 0
+ 102:	ca 01       	movw	r24, r20
+ 104:	9c 01       	movw	r18, r24
+ 106:	22 0f       	add	r18, r18
+ 108:	33 1f       	adc	r19, r19
+ 10a:	c9 01       	movw	r24, r18
+ 10c:	96 95       	lsr	r25
+ 10e:	98 2f       	mov	r25, r24
+ 110:	88 27       	eor	r24, r24
+ 112:	97 95       	ror	r25
+ 114:	87 95       	ror	r24
+ 116:	82 1b       	sub	r24, r18
+ 118:	93 0b       	sbc	r25, r19
+ 11a:	84 0f       	add	r24, r20
+ 11c:	95 1f       	adc	r25, r21
+ 11e:	24 e6       	ldi	r18, 0x64	; 100
+ 120:	30 e0       	ldi	r19, 0x00	; 0
+ 122:	b9 01       	movw	r22, r18
+ 124:	0e 94 a3 02 	call	0x546	; 0x546 <__divmodhi4>
+ 128:	cb 01       	movw	r24, r22
+ 12a:	80 83       	st	Z, r24
+}
+ 12c:	0f 90       	pop	r0
+ 12e:	cf 91       	pop	r28
+ 130:	df 91       	pop	r29
+ 132:	08 95       	ret
+
+00000134 <PWM_Timer2_init>:
+/*****************************************************
+ * 				Functions Definitions				 *
+ *****************************************************/
+
+void PWM_Timer2_init(uint8 duty_cycle)
+{
+ 134:	df 93       	push	r29
+ 136:	cf 93       	push	r28
+ 138:	0f 92       	push	r0
+ 13a:	cd b7       	in	r28, 0x3d	; 61
+ 13c:	de b7       	in	r29, 0x3e	; 62
+ 13e:	89 83       	std	Y+1, r24	; 0x01
+	/* Initial timer value */
+	TCNT2 = 0;
+ 140:	e4 e4       	ldi	r30, 0x44	; 68
+ 142:	f0 e0       	ldi	r31, 0x00	; 0
+ 144:	10 82       	st	Z, r1
+
+	/* Set duty cycle */
+	duty_cycle %= 101;
+ 146:	89 81       	ldd	r24, Y+1	; 0x01
+ 148:	95 e6       	ldi	r25, 0x65	; 101
+ 14a:	69 2f       	mov	r22, r25
+ 14c:	0e 94 97 02 	call	0x52e	; 0x52e <__udivmodqi4>
+ 150:	89 2f       	mov	r24, r25
+ 152:	89 83       	std	Y+1, r24	; 0x01
+	OCR2  = SET_DUTYCYCLE(duty_cycle);
+ 154:	e3 e4       	ldi	r30, 0x43	; 67
+ 156:	f0 e0       	ldi	r31, 0x00	; 0
+ 158:	89 81       	ldd	r24, Y+1	; 0x01
+ 15a:	48 2f       	mov	r20, r24
+ 15c:	50 e0       	ldi	r21, 0x00	; 0
+ 15e:	ca 01       	movw	r24, r20
+ 160:	9c 01       	movw	r18, r24
+ 162:	22 0f       	add	r18, r18
+ 164:	33 1f       	adc	r19, r19
+ 166:	c9 01       	movw	r24, r18
+ 168:	96 95       	lsr	r25
+ 16a:	98 2f       	mov	r25, r24
+ 16c:	88 27       	eor	r24, r24
+ 16e:	97 95       	ror	r25
+ 170:	87 95       	ror	r24
+ 172:	82 1b       	sub	r24, r18
+ 174:	93 0b       	sbc	r25, r19
+ 176:	84 0f       	add	r24, r20
+ 178:	95 1f       	adc	r25, r21
+ 17a:	24 e6       	ldi	r18, 0x64	; 100
+ 17c:	30 e0       	ldi	r19, 0x00	; 0
+ 17e:	b9 01       	movw	r22, r18
+ 180:	0e 94 a3 02 	call	0x546	; 0x546 <__divmodhi4>
+ 184:	cb 01       	movw	r24, r22
+ 186:	80 83       	st	Z, r24
+
+	/* Set OC2 as output pin */
+	DDRD  = DDRD | (1 << PD7);
+ 188:	a1 e3       	ldi	r26, 0x31	; 49
+ 18a:	b0 e0       	ldi	r27, 0x00	; 0
+ 18c:	e1 e3       	ldi	r30, 0x31	; 49
+ 18e:	f0 e0       	ldi	r31, 0x00	; 0
+ 190:	80 81       	ld	r24, Z
+ 192:	80 68       	ori	r24, 0x80	; 128
+ 194:	8c 93       	st	X, r24
+	 * 1. Fast PWM mode FOC0=0
+	 * 2. Fast PWM Mode WGM01=1 & WGM00=1
+	 * 3. Clear OC0 when match occurs (non inverted mode) COM00=0 & COM01=1
+	 * 4. clock = F_CPU/8 CS00=0 CS01=1 CS02=0
+	 */
+	TCCR2 = (1 << WGM20) | (1 << WGM21) | (1 << COM21) | (1 << CS21);
+ 196:	e5 e4       	ldi	r30, 0x45	; 69
+ 198:	f0 e0       	ldi	r31, 0x00	; 0
+ 19a:	8a e6       	ldi	r24, 0x6A	; 106
+ 19c:	80 83       	st	Z, r24
+}
+ 19e:	0f 90       	pop	r0
+ 1a0:	cf 91       	pop	r28
+ 1a2:	df 91       	pop	r29
+ 1a4:	08 95       	ret
+
+000001a6 <PWM_Timer2_setDutyCycle>:
+
+void PWM_Timer2_setDutyCycle(uint8 duty_cycle)
+{
+ 1a6:	df 93       	push	r29
+ 1a8:	cf 93       	push	r28
+ 1aa:	0f 92       	push	r0
+ 1ac:	cd b7       	in	r28, 0x3d	; 61
+ 1ae:	de b7       	in	r29, 0x3e	; 62
+ 1b0:	89 83       	std	Y+1, r24	; 0x01
+	/* Set duty cycle */
+	duty_cycle %= 101;
+ 1b2:	89 81       	ldd	r24, Y+1	; 0x01
+ 1b4:	95 e6       	ldi	r25, 0x65	; 101
+ 1b6:	69 2f       	mov	r22, r25
+ 1b8:	0e 94 97 02 	call	0x52e	; 0x52e <__udivmodqi4>
+ 1bc:	89 2f       	mov	r24, r25
+ 1be:	89 83       	std	Y+1, r24	; 0x01
+	OCR2  = SET_DUTYCYCLE(duty_cycle);
+ 1c0:	e3 e4       	ldi	r30, 0x43	; 67
+ 1c2:	f0 e0       	ldi	r31, 0x00	; 0
+ 1c4:	89 81       	ldd	r24, Y+1	; 0x01
+ 1c6:	48 2f       	mov	r20, r24
+ 1c8:	50 e0       	ldi	r21, 0x00	; 0
+ 1ca:	ca 01       	movw	r24, r20
+ 1cc:	9c 01       	movw	r18, r24
+ 1ce:	22 0f       	add	r18, r18
+ 1d0:	33 1f       	adc	r19, r19
+ 1d2:	c9 01       	movw	r24, r18
+ 1d4:	96 95       	lsr	r25
+ 1d6:	98 2f       	mov	r25, r24
+ 1d8:	88 27       	eor	r24, r24
+ 1da:	97 95       	ror	r25
+ 1dc:	87 95       	ror	r24
+ 1de:	82 1b       	sub	r24, r18
+ 1e0:	93 0b       	sbc	r25, r19
+ 1e2:	84 0f       	add	r24, r20
+ 1e4:	95 1f       	adc	r25, r21
+ 1e6:	24 e6       	ldi	r18, 0x64	; 100
+ 1e8:	30 e0       	ldi	r19, 0x00	; 0
+ 1ea:	b9 01       	movw	r22, r18
+ 1ec:	0e 94 a3 02 	call	0x546	; 0x546 <__divmodhi4>
+ 1f0:	cb 01       	movw	r24, r22
+ 1f2:	80 83       	st	Z, r24
+}
+ 1f4:	0f 90       	pop	r0
+ 1f6:	cf 91       	pop	r28
+ 1f8:	df 91       	pop	r29
+ 1fa:	08 95       	ret
+
+000001fc <UART_init>:
+/*****************************************************
+ * 				Functions Definitions				 *
+ *****************************************************/
+
+void UART_init(const UartCommType type)
+{
+ 1fc:	df 93       	push	r29
+ 1fe:	cf 93       	push	r28
+ 200:	0f 92       	push	r0
+ 202:	cd b7       	in	r28, 0x3d	; 61
+ 204:	de b7       	in	r29, 0x3e	; 62
+ 206:	89 83       	std	Y+1, r24	; 0x01
+	/* U2X = 1 for double transmission speed */
+		UCSRA = (1<<U2X);
+ 208:	eb e2       	ldi	r30, 0x2B	; 43
+ 20a:	f0 e0       	ldi	r31, 0x00	; 0
+ 20c:	82 e0       	ldi	r24, 0x02	; 2
+ 20e:	80 83       	st	Z, r24
+		 * RXEN  = 1 Receiver Enable
+		 * RXEN  = 1 Transmitter Enable
+		 * UCSZ2 = 0 For 8-bit data mode
+		 * RXB8 & TXB8 not used for 8-bit data mode
+		 ***********************************************************************/
+		if(type == Full_Duplex)
+ 210:	89 81       	ldd	r24, Y+1	; 0x01
+ 212:	88 23       	and	r24, r24
+ 214:	29 f4       	brne	.+10     	; 0x220 <UART_init+0x24>
+		{
+			UCSRB = (1<<RXEN) | (1<<TXEN);
+ 216:	ea e2       	ldi	r30, 0x2A	; 42
+ 218:	f0 e0       	ldi	r31, 0x00	; 0
+ 21a:	88 e1       	ldi	r24, 0x18	; 24
+ 21c:	80 83       	st	Z, r24
+ 21e:	12 c0       	rjmp	.+36     	; 0x244 <UART_init+0x48>
+		}
+		else if(type == Transmitter)
+ 220:	89 81       	ldd	r24, Y+1	; 0x01
+ 222:	81 30       	cpi	r24, 0x01	; 1
+ 224:	41 f4       	brne	.+16     	; 0x236 <UART_init+0x3a>
+		{
+			SET_BIT(UCSRB, TXEN);
+ 226:	aa e2       	ldi	r26, 0x2A	; 42
+ 228:	b0 e0       	ldi	r27, 0x00	; 0
+ 22a:	ea e2       	ldi	r30, 0x2A	; 42
+ 22c:	f0 e0       	ldi	r31, 0x00	; 0
+ 22e:	80 81       	ld	r24, Z
+ 230:	88 60       	ori	r24, 0x08	; 8
+ 232:	8c 93       	st	X, r24
+ 234:	07 c0       	rjmp	.+14     	; 0x244 <UART_init+0x48>
+		}
+		else
+		{
+			SET_BIT(UCSRB, RXEN);
+ 236:	aa e2       	ldi	r26, 0x2A	; 42
+ 238:	b0 e0       	ldi	r27, 0x00	; 0
+ 23a:	ea e2       	ldi	r30, 0x2A	; 42
+ 23c:	f0 e0       	ldi	r31, 0x00	; 0
+ 23e:	80 81       	ld	r24, Z
+ 240:	80 61       	ori	r24, 0x10	; 16
+ 242:	8c 93       	st	X, r24
+		 * UPM1:0  = 00 Disable parity bit
+		 * USBS    = 0 One stop bit
+		 * UCSZ1:0 = 11 For 8-bit data mode
+		 * UCPOL   = 0 Used with the Synchronous operation only
+		 ***********************************************************************/
+		UCSRC = (1<<URSEL) | (1<<UCSZ0) | (1<<UCSZ1);
+ 244:	e0 e4       	ldi	r30, 0x40	; 64
+ 246:	f0 e0       	ldi	r31, 0x00	; 0
+ 248:	86 e8       	ldi	r24, 0x86	; 134
+ 24a:	80 83       	st	Z, r24
+
+		/*
+		 * First 8 bits from the BAUD_PRESCALE inside UBRRL
+		 * last 4 bits in UBRRH
+		 */
+		CLEAR_BIT(UBRRH, URSEL);
+ 24c:	a0 e4       	ldi	r26, 0x40	; 64
+ 24e:	b0 e0       	ldi	r27, 0x00	; 0
+ 250:	e0 e4       	ldi	r30, 0x40	; 64
+ 252:	f0 e0       	ldi	r31, 0x00	; 0
+ 254:	80 81       	ld	r24, Z
+ 256:	8f 77       	andi	r24, 0x7F	; 127
+ 258:	8c 93       	st	X, r24
+		UBRRH = BAUD_PRESCALE>>8;
+ 25a:	e0 e4       	ldi	r30, 0x40	; 64
+ 25c:	f0 e0       	ldi	r31, 0x00	; 0
+ 25e:	10 82       	st	Z, r1
+		UBRRL = BAUD_PRESCALE;
+ 260:	e9 e2       	ldi	r30, 0x29	; 41
+ 262:	f0 e0       	ldi	r31, 0x00	; 0
+ 264:	8c e0       	ldi	r24, 0x0C	; 12
+ 266:	80 83       	st	Z, r24
+}
+ 268:	0f 90       	pop	r0
+ 26a:	cf 91       	pop	r28
+ 26c:	df 91       	pop	r29
+ 26e:	08 95       	ret
+
+00000270 <UART_sendByte>:
+
+
+void UART_sendByte(const uint8 data)
+{
+ 270:	df 93       	push	r29
+ 272:	cf 93       	push	r28
+ 274:	0f 92       	push	r0
+ 276:	cd b7       	in	r28, 0x3d	; 61
+ 278:	de b7       	in	r29, 0x3e	; 62
+ 27a:	89 83       	std	Y+1, r24	; 0x01
+	/*
+	 * Polling till Tx buffer (UDR) is empty and ready
+	 * for transmitting a new byte
+	 */
+	while(BIT_IS_CLEAR(UCSRA,UDRE)){}
+ 27c:	eb e2       	ldi	r30, 0x2B	; 43
+ 27e:	f0 e0       	ldi	r31, 0x00	; 0
+ 280:	80 81       	ld	r24, Z
+ 282:	88 2f       	mov	r24, r24
+ 284:	90 e0       	ldi	r25, 0x00	; 0
+ 286:	80 72       	andi	r24, 0x20	; 32
+ 288:	90 70       	andi	r25, 0x00	; 0
+ 28a:	00 97       	sbiw	r24, 0x00	; 0
+ 28c:	b9 f3       	breq	.-18     	; 0x27c <UART_sendByte+0xc>
+
+	/* Put the required data in the UDR register */
+	UDR = data;
+ 28e:	ec e2       	ldi	r30, 0x2C	; 44
+ 290:	f0 e0       	ldi	r31, 0x00	; 0
+ 292:	89 81       	ldd	r24, Y+1	; 0x01
+ 294:	80 83       	st	Z, r24
+}
+ 296:	0f 90       	pop	r0
+ 298:	cf 91       	pop	r28
+ 29a:	df 91       	pop	r29
+ 29c:	08 95       	ret
+
+0000029e <UART_recieveByte>:
+
+
+uint8 UART_recieveByte(void)
+{
+ 29e:	df 93       	push	r29
+ 2a0:	cf 93       	push	r28
+ 2a2:	cd b7       	in	r28, 0x3d	; 61
+ 2a4:	de b7       	in	r29, 0x3e	; 62
+	/* Polling till UART receive data */
+	while(BIT_IS_CLEAR(UCSRA,RXC)){}
+ 2a6:	eb e2       	ldi	r30, 0x2B	; 43
+ 2a8:	f0 e0       	ldi	r31, 0x00	; 0
+ 2aa:	80 81       	ld	r24, Z
+ 2ac:	88 23       	and	r24, r24
+ 2ae:	dc f7       	brge	.-10     	; 0x2a6 <UART_recieveByte+0x8>
+
+	/* Return the received data from the Rx buffer (UDR) */
+    return UDR;
+ 2b0:	ec e2       	ldi	r30, 0x2C	; 44
+ 2b2:	f0 e0       	ldi	r31, 0x00	; 0
+ 2b4:	80 81       	ld	r24, Z
+}
+ 2b6:	cf 91       	pop	r28
+ 2b8:	df 91       	pop	r29
+ 2ba:	08 95       	ret
+
+000002bc <Motors_init>:
+/*****************************************************
+ * 				Functions Definitions				 *
+ *****************************************************/
+
+void Motors_init(void)
+{
+ 2bc:	df 93       	push	r29
+ 2be:	cf 93       	push	r28
+ 2c0:	cd b7       	in	r28, 0x3d	; 61
+ 2c2:	de b7       	in	r29, 0x3e	; 62
+	/* Set pins as output */
+	SET_BIT(DDRA, PA0);
+ 2c4:	aa e3       	ldi	r26, 0x3A	; 58
+ 2c6:	b0 e0       	ldi	r27, 0x00	; 0
+ 2c8:	ea e3       	ldi	r30, 0x3A	; 58
+ 2ca:	f0 e0       	ldi	r31, 0x00	; 0
+ 2cc:	80 81       	ld	r24, Z
+ 2ce:	81 60       	ori	r24, 0x01	; 1
+ 2d0:	8c 93       	st	X, r24
+	SET_BIT(DDRA, PA1);
+ 2d2:	aa e3       	ldi	r26, 0x3A	; 58
+ 2d4:	b0 e0       	ldi	r27, 0x00	; 0
+ 2d6:	ea e3       	ldi	r30, 0x3A	; 58
+ 2d8:	f0 e0       	ldi	r31, 0x00	; 0
+ 2da:	80 81       	ld	r24, Z
+ 2dc:	82 60       	ori	r24, 0x02	; 2
+ 2de:	8c 93       	st	X, r24
+	SET_BIT(DDRA, PA2);
+ 2e0:	aa e3       	ldi	r26, 0x3A	; 58
+ 2e2:	b0 e0       	ldi	r27, 0x00	; 0
+ 2e4:	ea e3       	ldi	r30, 0x3A	; 58
+ 2e6:	f0 e0       	ldi	r31, 0x00	; 0
+ 2e8:	80 81       	ld	r24, Z
+ 2ea:	84 60       	ori	r24, 0x04	; 4
+ 2ec:	8c 93       	st	X, r24
+	SET_BIT(DDRA, PA3);
+ 2ee:	aa e3       	ldi	r26, 0x3A	; 58
+ 2f0:	b0 e0       	ldi	r27, 0x00	; 0
+ 2f2:	ea e3       	ldi	r30, 0x3A	; 58
+ 2f4:	f0 e0       	ldi	r31, 0x00	; 0
+ 2f6:	80 81       	ld	r24, Z
+ 2f8:	88 60       	ori	r24, 0x08	; 8
+ 2fa:	8c 93       	st	X, r24
+
+	/* Motors are stopped at the beginning */
+	CLEAR_BIT(PORTA, PA0);
+ 2fc:	ab e3       	ldi	r26, 0x3B	; 59
+ 2fe:	b0 e0       	ldi	r27, 0x00	; 0
+ 300:	eb e3       	ldi	r30, 0x3B	; 59
+ 302:	f0 e0       	ldi	r31, 0x00	; 0
+ 304:	80 81       	ld	r24, Z
+ 306:	8e 7f       	andi	r24, 0xFE	; 254
+ 308:	8c 93       	st	X, r24
+	CLEAR_BIT(PORTA, PA1);
+ 30a:	ab e3       	ldi	r26, 0x3B	; 59
+ 30c:	b0 e0       	ldi	r27, 0x00	; 0
+ 30e:	eb e3       	ldi	r30, 0x3B	; 59
+ 310:	f0 e0       	ldi	r31, 0x00	; 0
+ 312:	80 81       	ld	r24, Z
+ 314:	8d 7f       	andi	r24, 0xFD	; 253
+ 316:	8c 93       	st	X, r24
+	CLEAR_BIT(PORTA, PA2);
+ 318:	ab e3       	ldi	r26, 0x3B	; 59
+ 31a:	b0 e0       	ldi	r27, 0x00	; 0
+ 31c:	eb e3       	ldi	r30, 0x3B	; 59
+ 31e:	f0 e0       	ldi	r31, 0x00	; 0
+ 320:	80 81       	ld	r24, Z
+ 322:	8b 7f       	andi	r24, 0xFB	; 251
+ 324:	8c 93       	st	X, r24
+	CLEAR_BIT(PORTA, PA3);
+ 326:	ab e3       	ldi	r26, 0x3B	; 59
+ 328:	b0 e0       	ldi	r27, 0x00	; 0
+ 32a:	eb e3       	ldi	r30, 0x3B	; 59
+ 32c:	f0 e0       	ldi	r31, 0x00	; 0
+ 32e:	80 81       	ld	r24, Z
+ 330:	87 7f       	andi	r24, 0xF7	; 247
+ 332:	8c 93       	st	X, r24
+
+	/* Initialize PWM pins */
+	PWM_Timer0_init(0);
+ 334:	80 e0       	ldi	r24, 0x00	; 0
+ 336:	0e 94 36 00 	call	0x6c	; 0x6c <PWM_Timer0_init>
+	PWM_Timer2_init(0);
+ 33a:	80 e0       	ldi	r24, 0x00	; 0
+ 33c:	0e 94 9a 00 	call	0x134	; 0x134 <PWM_Timer2_init>
+}
+ 340:	cf 91       	pop	r28
+ 342:	df 91       	pop	r29
+ 344:	08 95       	ret
+
+00000346 <main>:
+
+#include "LiftingMechanism_AVR_drivers.h"
+
+
+int main(void)
+{
+ 346:	df 93       	push	r29
+ 348:	cf 93       	push	r28
+ 34a:	0f 92       	push	r0
+ 34c:	cd b7       	in	r28, 0x3d	; 61
+ 34e:	de b7       	in	r29, 0x3e	; 62
+	/* Application Initialization */
+	/* UART Initialization */
+	UART_init((UartCommType)Reciever);
+ 350:	82 e0       	ldi	r24, 0x02	; 2
+ 352:	0e 94 fe 00 	call	0x1fc	; 0x1fc <UART_init>
+
+	/* Motion motors Initialization */
+	Motors_init();
+ 356:	0e 94 5e 01 	call	0x2bc	; 0x2bc <Motors_init>
+
+	/*
+	 * pressedButton: Holds the data received by the UART,
+	 * which specifies which button is pressed in the mobile application
+	 */
+	uint8 pressedButton = UART_recieveByte();
+ 35a:	0e 94 4f 01 	call	0x29e	; 0x29e <UART_recieveByte>
+ 35e:	89 83       	std	Y+1, r24	; 0x01
+	while(TRUE)
+	{
+		/* Receive data from bluetooth module by UART */
+		//pressedButton = UART_recieveByte();
+
+		if(pressedButton == '1' || pressedButton == '2' || pressedButton == '3')
+ 360:	89 81       	ldd	r24, Y+1	; 0x01
+ 362:	81 33       	cpi	r24, 0x31	; 49
+ 364:	31 f0       	breq	.+12     	; 0x372 <main+0x2c>
+ 366:	89 81       	ldd	r24, Y+1	; 0x01
+ 368:	82 33       	cpi	r24, 0x32	; 50
+ 36a:	19 f0       	breq	.+6      	; 0x372 <main+0x2c>
+ 36c:	89 81       	ldd	r24, Y+1	; 0x01
+ 36e:	83 33       	cpi	r24, 0x33	; 51
+ 370:	f1 f4       	brne	.+60     	; 0x3ae <main+0x68>
+		{
+			/* Change PWM (Control speed) */
+			SHIFT_GEAR(pressedButton);
+ 372:	89 81       	ldd	r24, Y+1	; 0x01
+ 374:	81 33       	cpi	r24, 0x31	; 49
+ 376:	39 f4       	brne	.+14     	; 0x386 <main+0x40>
+ 378:	83 e2       	ldi	r24, 0x23	; 35
+ 37a:	0e 94 6f 00 	call	0xde	; 0xde <PWM_Timer0_setDutyCycle>
+ 37e:	83 e2       	ldi	r24, 0x23	; 35
+ 380:	0e 94 d3 00 	call	0x1a6	; 0x1a6 <PWM_Timer2_setDutyCycle>
+ 384:	10 c0       	rjmp	.+32     	; 0x3a6 <main+0x60>
+ 386:	89 81       	ldd	r24, Y+1	; 0x01
+ 388:	82 33       	cpi	r24, 0x32	; 50
+ 38a:	39 f4       	brne	.+14     	; 0x39a <main+0x54>
+ 38c:	86 e4       	ldi	r24, 0x46	; 70
+ 38e:	0e 94 6f 00 	call	0xde	; 0xde <PWM_Timer0_setDutyCycle>
+ 392:	86 e4       	ldi	r24, 0x46	; 70
+ 394:	0e 94 d3 00 	call	0x1a6	; 0x1a6 <PWM_Timer2_setDutyCycle>
+ 398:	06 c0       	rjmp	.+12     	; 0x3a6 <main+0x60>
+ 39a:	84 e6       	ldi	r24, 0x64	; 100
+ 39c:	0e 94 6f 00 	call	0xde	; 0xde <PWM_Timer0_setDutyCycle>
+ 3a0:	84 e6       	ldi	r24, 0x64	; 100
+ 3a2:	0e 94 d3 00 	call	0x1a6	; 0x1a6 <PWM_Timer2_setDutyCycle>
+
+			/* Read button */
+			pressedButton = UART_recieveByte();
+ 3a6:	0e 94 4f 01 	call	0x29e	; 0x29e <UART_recieveByte>
+ 3aa:	89 83       	std	Y+1, r24	; 0x01
+ 3ac:	d9 cf       	rjmp	.-78     	; 0x360 <main+0x1a>
+		}
+		else if(pressedButton == '4')
+ 3ae:	89 81       	ldd	r24, Y+1	; 0x01
+ 3b0:	84 33       	cpi	r24, 0x34	; 52
+ 3b2:	21 f5       	brne	.+72     	; 0x3fc <main+0xb6>
+		{
+			/* Move Robot Forward */
+			MOVE_FWD();
+ 3b4:	ab e3       	ldi	r26, 0x3B	; 59
+ 3b6:	b0 e0       	ldi	r27, 0x00	; 0
+ 3b8:	eb e3       	ldi	r30, 0x3B	; 59
+ 3ba:	f0 e0       	ldi	r31, 0x00	; 0
+ 3bc:	80 81       	ld	r24, Z
+ 3be:	81 60       	ori	r24, 0x01	; 1
+ 3c0:	8c 93       	st	X, r24
+ 3c2:	ab e3       	ldi	r26, 0x3B	; 59
+ 3c4:	b0 e0       	ldi	r27, 0x00	; 0
+ 3c6:	eb e3       	ldi	r30, 0x3B	; 59
+ 3c8:	f0 e0       	ldi	r31, 0x00	; 0
+ 3ca:	80 81       	ld	r24, Z
+ 3cc:	8d 7f       	andi	r24, 0xFD	; 253
+ 3ce:	8c 93       	st	X, r24
+ 3d0:	ab e3       	ldi	r26, 0x3B	; 59
+ 3d2:	b0 e0       	ldi	r27, 0x00	; 0
+ 3d4:	eb e3       	ldi	r30, 0x3B	; 59
+ 3d6:	f0 e0       	ldi	r31, 0x00	; 0
+ 3d8:	80 81       	ld	r24, Z
+ 3da:	84 60       	ori	r24, 0x04	; 4
+ 3dc:	8c 93       	st	X, r24
+ 3de:	ab e3       	ldi	r26, 0x3B	; 59
+ 3e0:	b0 e0       	ldi	r27, 0x00	; 0
+ 3e2:	eb e3       	ldi	r30, 0x3B	; 59
+ 3e4:	f0 e0       	ldi	r31, 0x00	; 0
+ 3e6:	80 81       	ld	r24, Z
+ 3e8:	87 7f       	andi	r24, 0xF7	; 247
+ 3ea:	8c 93       	st	X, r24
+ 3ec:	03 c0       	rjmp	.+6      	; 0x3f4 <main+0xae>
+
+			/* Keep Moving while button is still pressed */
+			while(pressedButton == '4')
+			{
+				pressedButton = UART_recieveByte();
+ 3ee:	0e 94 4f 01 	call	0x29e	; 0x29e <UART_recieveByte>
+ 3f2:	89 83       	std	Y+1, r24	; 0x01
+		{
+			/* Move Robot Forward */
+			MOVE_FWD();
+
+			/* Keep Moving while button is still pressed */
+			while(pressedButton == '4')
+ 3f4:	89 81       	ldd	r24, Y+1	; 0x01
+ 3f6:	84 33       	cpi	r24, 0x34	; 52
+ 3f8:	d1 f3       	breq	.-12     	; 0x3ee <main+0xa8>
+ 3fa:	b2 cf       	rjmp	.-156    	; 0x360 <main+0x1a>
+			{
+				pressedButton = UART_recieveByte();
+			}
+		}
+		else if(pressedButton == '5')
+ 3fc:	89 81       	ldd	r24, Y+1	; 0x01
+ 3fe:	85 33       	cpi	r24, 0x35	; 53
+ 400:	21 f5       	brne	.+72     	; 0x44a <main+0x104>
+		{
+			/* Move Robot Backward */
+			MOVE_BWD();
+ 402:	ab e3       	ldi	r26, 0x3B	; 59
+ 404:	b0 e0       	ldi	r27, 0x00	; 0
+ 406:	eb e3       	ldi	r30, 0x3B	; 59
+ 408:	f0 e0       	ldi	r31, 0x00	; 0
+ 40a:	80 81       	ld	r24, Z
+ 40c:	8e 7f       	andi	r24, 0xFE	; 254
+ 40e:	8c 93       	st	X, r24
+ 410:	ab e3       	ldi	r26, 0x3B	; 59
+ 412:	b0 e0       	ldi	r27, 0x00	; 0
+ 414:	eb e3       	ldi	r30, 0x3B	; 59
+ 416:	f0 e0       	ldi	r31, 0x00	; 0
+ 418:	80 81       	ld	r24, Z
+ 41a:	82 60       	ori	r24, 0x02	; 2
+ 41c:	8c 93       	st	X, r24
+ 41e:	ab e3       	ldi	r26, 0x3B	; 59
+ 420:	b0 e0       	ldi	r27, 0x00	; 0
+ 422:	eb e3       	ldi	r30, 0x3B	; 59
+ 424:	f0 e0       	ldi	r31, 0x00	; 0
+ 426:	80 81       	ld	r24, Z
+ 428:	8b 7f       	andi	r24, 0xFB	; 251
+ 42a:	8c 93       	st	X, r24
+ 42c:	ab e3       	ldi	r26, 0x3B	; 59
+ 42e:	b0 e0       	ldi	r27, 0x00	; 0
+ 430:	eb e3       	ldi	r30, 0x3B	; 59
+ 432:	f0 e0       	ldi	r31, 0x00	; 0
+ 434:	80 81       	ld	r24, Z
+ 436:	88 60       	ori	r24, 0x08	; 8
+ 438:	8c 93       	st	X, r24
+ 43a:	03 c0       	rjmp	.+6      	; 0x442 <main+0xfc>
+
+			/* Keep Moving while button is still pressed */
+			while(pressedButton == '5')
+			{
+				pressedButton = UART_recieveByte();
+ 43c:	0e 94 4f 01 	call	0x29e	; 0x29e <UART_recieveByte>
+ 440:	89 83       	std	Y+1, r24	; 0x01
+		{
+			/* Move Robot Backward */
+			MOVE_BWD();
+
+			/* Keep Moving while button is still pressed */
+			while(pressedButton == '5')
+ 442:	89 81       	ldd	r24, Y+1	; 0x01
+ 444:	85 33       	cpi	r24, 0x35	; 53
+ 446:	d1 f3       	breq	.-12     	; 0x43c <main+0xf6>
+ 448:	8b cf       	rjmp	.-234    	; 0x360 <main+0x1a>
+			{
+				pressedButton = UART_recieveByte();
+			}
+		}
+		else if(pressedButton == '6')
+ 44a:	89 81       	ldd	r24, Y+1	; 0x01
+ 44c:	86 33       	cpi	r24, 0x36	; 54
+ 44e:	21 f5       	brne	.+72     	; 0x498 <main+0x152>
+		{
+			/* Turn Robot Right */
+			TURN_RIGHT();
+ 450:	ab e3       	ldi	r26, 0x3B	; 59
+ 452:	b0 e0       	ldi	r27, 0x00	; 0
+ 454:	eb e3       	ldi	r30, 0x3B	; 59
+ 456:	f0 e0       	ldi	r31, 0x00	; 0
+ 458:	80 81       	ld	r24, Z
+ 45a:	81 60       	ori	r24, 0x01	; 1
+ 45c:	8c 93       	st	X, r24
+ 45e:	ab e3       	ldi	r26, 0x3B	; 59
+ 460:	b0 e0       	ldi	r27, 0x00	; 0
+ 462:	eb e3       	ldi	r30, 0x3B	; 59
+ 464:	f0 e0       	ldi	r31, 0x00	; 0
+ 466:	80 81       	ld	r24, Z
+ 468:	8d 7f       	andi	r24, 0xFD	; 253
+ 46a:	8c 93       	st	X, r24
+ 46c:	ab e3       	ldi	r26, 0x3B	; 59
+ 46e:	b0 e0       	ldi	r27, 0x00	; 0
+ 470:	eb e3       	ldi	r30, 0x3B	; 59
+ 472:	f0 e0       	ldi	r31, 0x00	; 0
+ 474:	80 81       	ld	r24, Z
+ 476:	8b 7f       	andi	r24, 0xFB	; 251
+ 478:	8c 93       	st	X, r24
+ 47a:	ab e3       	ldi	r26, 0x3B	; 59
+ 47c:	b0 e0       	ldi	r27, 0x00	; 0
+ 47e:	eb e3       	ldi	r30, 0x3B	; 59
+ 480:	f0 e0       	ldi	r31, 0x00	; 0
+ 482:	80 81       	ld	r24, Z
+ 484:	87 7f       	andi	r24, 0xF7	; 247
+ 486:	8c 93       	st	X, r24
+ 488:	03 c0       	rjmp	.+6      	; 0x490 <main+0x14a>
+
+			/* Keep Moving while button is still pressed */
+			while(pressedButton == '6')
+			{
+				pressedButton = UART_recieveByte();
+ 48a:	0e 94 4f 01 	call	0x29e	; 0x29e <UART_recieveByte>
+ 48e:	89 83       	std	Y+1, r24	; 0x01
+		{
+			/* Turn Robot Right */
+			TURN_RIGHT();
+
+			/* Keep Moving while button is still pressed */
+			while(pressedButton == '6')
+ 490:	89 81       	ldd	r24, Y+1	; 0x01
+ 492:	86 33       	cpi	r24, 0x36	; 54
+ 494:	d1 f3       	breq	.-12     	; 0x48a <main+0x144>
+ 496:	64 cf       	rjmp	.-312    	; 0x360 <main+0x1a>
+			{
+				pressedButton = UART_recieveByte();
+			}
+		}
+		else if(pressedButton == '7')
+ 498:	89 81       	ldd	r24, Y+1	; 0x01
+ 49a:	87 33       	cpi	r24, 0x37	; 55
+ 49c:	21 f5       	brne	.+72     	; 0x4e6 <main+0x1a0>
+		{
+			/* Turn Robot Right */
+			TURN_LEFT();
+ 49e:	ab e3       	ldi	r26, 0x3B	; 59
+ 4a0:	b0 e0       	ldi	r27, 0x00	; 0
+ 4a2:	eb e3       	ldi	r30, 0x3B	; 59
+ 4a4:	f0 e0       	ldi	r31, 0x00	; 0
+ 4a6:	80 81       	ld	r24, Z
+ 4a8:	84 60       	ori	r24, 0x04	; 4
+ 4aa:	8c 93       	st	X, r24
+ 4ac:	ab e3       	ldi	r26, 0x3B	; 59
+ 4ae:	b0 e0       	ldi	r27, 0x00	; 0
+ 4b0:	eb e3       	ldi	r30, 0x3B	; 59
+ 4b2:	f0 e0       	ldi	r31, 0x00	; 0
+ 4b4:	80 81       	ld	r24, Z
+ 4b6:	87 7f       	andi	r24, 0xF7	; 247
+ 4b8:	8c 93       	st	X, r24
+ 4ba:	ab e3       	ldi	r26, 0x3B	; 59
+ 4bc:	b0 e0       	ldi	r27, 0x00	; 0
+ 4be:	eb e3       	ldi	r30, 0x3B	; 59
+ 4c0:	f0 e0       	ldi	r31, 0x00	; 0
+ 4c2:	80 81       	ld	r24, Z
+ 4c4:	8e 7f       	andi	r24, 0xFE	; 254
+ 4c6:	8c 93       	st	X, r24
+ 4c8:	ab e3       	ldi	r26, 0x3B	; 59
+ 4ca:	b0 e0       	ldi	r27, 0x00	; 0
+ 4cc:	eb e3       	ldi	r30, 0x3B	; 59
+ 4ce:	f0 e0       	ldi	r31, 0x00	; 0
+ 4d0:	80 81       	ld	r24, Z
+ 4d2:	8d 7f       	andi	r24, 0xFD	; 253
+ 4d4:	8c 93       	st	X, r24
+ 4d6:	03 c0       	rjmp	.+6      	; 0x4de <main+0x198>
+
+			/* Keep Moving while button is still pressed */
+			while(pressedButton == '7')
+			{
+				pressedButton = UART_recieveByte();
+ 4d8:	0e 94 4f 01 	call	0x29e	; 0x29e <UART_recieveByte>
+ 4dc:	89 83       	std	Y+1, r24	; 0x01
+		{
+			/* Turn Robot Right */
+			TURN_LEFT();
+
+			/* Keep Moving while button is still pressed */
+			while(pressedButton == '7')
+ 4de:	89 81       	ldd	r24, Y+1	; 0x01
+ 4e0:	87 33       	cpi	r24, 0x37	; 55
+ 4e2:	d1 f3       	breq	.-12     	; 0x4d8 <main+0x192>
+ 4e4:	3d cf       	rjmp	.-390    	; 0x360 <main+0x1a>
+			{
+				pressedButton = UART_recieveByte();
+			}
+		}
+		else if(pressedButton == '0')
+ 4e6:	89 81       	ldd	r24, Y+1	; 0x01
+ 4e8:	80 33       	cpi	r24, 0x30	; 48
+ 4ea:	09 f0       	breq	.+2      	; 0x4ee <main+0x1a8>
+ 4ec:	39 cf       	rjmp	.-398    	; 0x360 <main+0x1a>
+		{
+			/* Stop Robot */
+			MOTORS_STOP();
+ 4ee:	ab e3       	ldi	r26, 0x3B	; 59
+ 4f0:	b0 e0       	ldi	r27, 0x00	; 0
+ 4f2:	eb e3       	ldi	r30, 0x3B	; 59
+ 4f4:	f0 e0       	ldi	r31, 0x00	; 0
+ 4f6:	80 81       	ld	r24, Z
+ 4f8:	8e 7f       	andi	r24, 0xFE	; 254
+ 4fa:	8c 93       	st	X, r24
+ 4fc:	ab e3       	ldi	r26, 0x3B	; 59
+ 4fe:	b0 e0       	ldi	r27, 0x00	; 0
+ 500:	eb e3       	ldi	r30, 0x3B	; 59
+ 502:	f0 e0       	ldi	r31, 0x00	; 0
+ 504:	80 81       	ld	r24, Z
+ 506:	8d 7f       	andi	r24, 0xFD	; 253
+ 508:	8c 93       	st	X, r24
+ 50a:	ab e3       	ldi	r26, 0x3B	; 59
+ 50c:	b0 e0       	ldi	r27, 0x00	; 0
+ 50e:	eb e3       	ldi	r30, 0x3B	; 59
+ 510:	f0 e0       	ldi	r31, 0x00	; 0
+ 512:	80 81       	ld	r24, Z
+ 514:	8b 7f       	andi	r24, 0xFB	; 251
+ 516:	8c 93       	st	X, r24
+ 518:	ab e3       	ldi	r26, 0x3B	; 59
+ 51a:	b0 e0       	ldi	r27, 0x00	; 0
+ 51c:	eb e3       	ldi	r30, 0x3B	; 59
+ 51e:	f0 e0       	ldi	r31, 0x00	; 0
+ 520:	80 81       	ld	r24, Z
+ 522:	87 7f       	andi	r24, 0xF7	; 247
+ 524:	8c 93       	st	X, r24
+			/* Read button */
+			pressedButton = UART_recieveByte();
+ 526:	0e 94 4f 01 	call	0x29e	; 0x29e <UART_recieveByte>
+ 52a:	89 83       	std	Y+1, r24	; 0x01
+ 52c:	19 cf       	rjmp	.-462    	; 0x360 <main+0x1a>
+
+0000052e <__udivmodqi4>:
+ 52e:	99 1b       	sub	r25, r25
+ 530:	79 e0       	ldi	r23, 0x09	; 9
+ 532:	04 c0       	rjmp	.+8      	; 0x53c <__udivmodqi4_ep>
+
+00000534 <__udivmodqi4_loop>:
+ 534:	99 1f       	adc	r25, r25
+ 536:	96 17       	cp	r25, r22
+ 538:	08 f0       	brcs	.+2      	; 0x53c <__udivmodqi4_ep>
+ 53a:	96 1b       	sub	r25, r22
+
+0000053c <__udivmodqi4_ep>:
+ 53c:	88 1f       	adc	r24, r24
+ 53e:	7a 95       	dec	r23
+ 540:	c9 f7       	brne	.-14     	; 0x534 <__udivmodqi4_loop>
+ 542:	80 95       	com	r24
+ 544:	08 95       	ret
+
+00000546 <__divmodhi4>:
+ 546:	97 fb       	bst	r25, 7
+ 548:	09 2e       	mov	r0, r25
+ 54a:	07 26       	eor	r0, r23
+ 54c:	0a d0       	rcall	.+20     	; 0x562 <__divmodhi4_neg1>
+ 54e:	77 fd       	sbrc	r23, 7
+ 550:	04 d0       	rcall	.+8      	; 0x55a <__divmodhi4_neg2>
+ 552:	0c d0       	rcall	.+24     	; 0x56c <__udivmodhi4>
+ 554:	06 d0       	rcall	.+12     	; 0x562 <__divmodhi4_neg1>
+ 556:	00 20       	and	r0, r0
+ 558:	1a f4       	brpl	.+6      	; 0x560 <__divmodhi4_exit>
+
+0000055a <__divmodhi4_neg2>:
+ 55a:	70 95       	com	r23
+ 55c:	61 95       	neg	r22
+ 55e:	7f 4f       	sbci	r23, 0xFF	; 255
+
+00000560 <__divmodhi4_exit>:
+ 560:	08 95       	ret
+
+00000562 <__divmodhi4_neg1>:
+ 562:	f6 f7       	brtc	.-4      	; 0x560 <__divmodhi4_exit>
+ 564:	90 95       	com	r25
+ 566:	81 95       	neg	r24
+ 568:	9f 4f       	sbci	r25, 0xFF	; 255
+ 56a:	08 95       	ret
+
+0000056c <__udivmodhi4>:
+ 56c:	aa 1b       	sub	r26, r26
+ 56e:	bb 1b       	sub	r27, r27
+ 570:	51 e1       	ldi	r21, 0x11	; 17
+ 572:	07 c0       	rjmp	.+14     	; 0x582 <__udivmodhi4_ep>
+
+00000574 <__udivmodhi4_loop>:
+ 574:	aa 1f       	adc	r26, r26
+ 576:	bb 1f       	adc	r27, r27
+ 578:	a6 17       	cp	r26, r22
+ 57a:	b7 07       	cpc	r27, r23
+ 57c:	10 f0       	brcs	.+4      	; 0x582 <__udivmodhi4_ep>
+ 57e:	a6 1b       	sub	r26, r22
+ 580:	b7 0b       	sbc	r27, r23
+
+00000582 <__udivmodhi4_ep>:
+ 582:	88 1f       	adc	r24, r24
+ 584:	99 1f       	adc	r25, r25
+ 586:	5a 95       	dec	r21
+ 588:	a9 f7       	brne	.-22     	; 0x574 <__udivmodhi4_loop>
+ 58a:	80 95       	com	r24
+ 58c:	90 95       	com	r25
+ 58e:	bc 01       	movw	r22, r24
+ 590:	cd 01       	movw	r24, r26
+ 592:	08 95       	ret
+
+00000594 <_exit>:
+ 594:	f8 94       	cli
+
+00000596 <__stop_program>:
+ 596:	ff cf       	rjmp	.-2      	; 0x596 <__stop_program>
